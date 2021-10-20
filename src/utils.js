@@ -21,7 +21,7 @@ const getRandomElement = (someArray) => {
 
 const getRandomElements = (someArray, {maxElements} = {}) => {
   const count = getRandomInt(1, maxElements || someArray.length - 1);
-  return shuffleArray(Array(count).fill().map(() => getRandomElement(someArray)));
+  return shuffleArray(Array(count).fill(getRandomElement(someArray)));
 };
 
 const getRandomPastDate = ({maxMonthsAgo = 12}) => {

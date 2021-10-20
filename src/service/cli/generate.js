@@ -61,33 +61,38 @@ const CATEGORIES = [
   `Железо`,
 ];
 
-class Record {
-  constructor() {
-    this.title = getRandomElement(TITLES);
-    this.createdDate = getRandomPastDate({maxMonthsAgo: MAX_MONTHS_CREATED_AGO}).toLocaleString(DATE_LOCALE);
-    this.announce = getRandomElements(SENTENCES, {maxElements: MAX_ANNOUNCE_SENTENCES}).join(` `);
-    this.fullText = getRandomElements(SENTENCES).join(` `);
-    this.сategory = getUniqueArray(getRandomElements(CATEGORIES));
-  }
+function getNewRecord() {
+  return {
+    title: getRandomElement(TITLES),
+    createdDate: getRandomPastDate({maxMonthsAgo: MAX_MONTHS_CREATED_AGO}).toLocaleString(DATE_LOCALE),
+    announce: getRandomElements(SENTENCES, {maxElements: MAX_ANNOUNCE_SENTENCES}).join(` `),
+    fullText: getRandomElements(SENTENCES).join(` `),
+    сategory: getUniqueArray(getRandomElements(CATEGORIES))
+  };
 }
 
 module.exports = {
   name: `--generate`,
   run(args) {
     let [count] = args;
-    count = Number.parseInt(count, 10) || MIN_RECORDS;
+    count = Number.parseInt(count, 10);
+    count = isNaN(count) ? MIN_RECORDS : count;
+
     if (count > MAX_RECORDS) {
       console.error(`Не больше ${MAX_RECORDS} публикаций`);
       process.exit(ExitCode.NOK);
     }
-    const records = Array(count).fill({}).map(() => new Record());
+
+    const records = Array(count).fill(getNewRecord());
     const data = JSON.stringify(records);
-    fs.writeFile(FILE_NAME, data, (error) => {
-      if (error) {
-        console.error(`Ошибка записи данных в файл`);
-        process.exit(ExitCode.NOK);
-      }
-      return console.info(`Файл ${FILE_NAME} успешно создан`);
-    });
+
+    try {
+      fs.writeFileSync(FILE_NAME, data);
+    } catch (error) {
+      console.error(`Ошибка записи данных в файл: ${error}`);
+      process.exit(ExitCode.NOK);
+    }
+
+    console.info(`Файл ${FILE_NAME} успешно создан`);
   }
 };
