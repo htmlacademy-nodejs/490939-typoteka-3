@@ -83,7 +83,7 @@ module.exports = {
       process.exit(ExitCode.NOK);
     }
 
-    const records = Array(count).fill(getNewRecord());
+    const records = Array.from({length: count}).map(() => getNewRecord());
     const data = JSON.stringify(records);
 
     try {
