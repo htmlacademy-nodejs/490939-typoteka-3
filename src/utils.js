@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require(`fs`).promises;
+
 // возвращает случайное целое число
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -42,12 +44,19 @@ const getUniqueArray = (someArray) => {
   return [...new Set(someArray)];
 };
 
+// возвращает массив строк из текстового файла
+const getRecordsFromTxtFile = async (filePath) => {
+  const rows = await fs.readFile(filePath);
+  return String(rows).trim().split(`\n`);
+};
+
 module.exports = {
   getRandomInt,
   shuffleArray,
   getRandomElement,
   getRandomElements,
   getRandomPastDate,
-  getUniqueArray
+  getUniqueArray,
+  getRecordsFromTxtFile
 };
 
