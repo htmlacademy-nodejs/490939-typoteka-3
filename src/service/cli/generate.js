@@ -1,6 +1,7 @@
 'use strict';
 
-const fs = require(`fs`);
+const fs = require(`fs`).promises;
+const chalk = require(`chalk`);
 const {ExitCode} = require(`../constants`);
 const {getRandomElement, getRandomElements, getRandomPastDate, getUniqueArray} = require(`../../utils`);
 
@@ -73,26 +74,26 @@ function getNewRecord() {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     let [count] = args;
     count = Number.parseInt(count, 10);
     count = isNaN(count) ? MIN_RECORDS : count;
 
     if (count > MAX_RECORDS) {
-      console.error(`Не больше ${MAX_RECORDS} публикаций`);
+      console.error(chalk.red(`Не больше ${MAX_RECORDS} публикаций`));
       process.exit(ExitCode.NOK);
     }
 
-    const records = Array(count).fill(getNewRecord());
+    const records = Array.from({length: count}).map(() => getNewRecord());
     const data = JSON.stringify(records);
 
     try {
-      fs.writeFileSync(FILE_NAME, data);
+      await fs.writeFile(FILE_NAME, data);
     } catch (error) {
-      console.error(`Ошибка записи данных в файл: ${error}`);
+      console.error(chalk.red(`Ошибка записи данных в файл: ${error}`));
       process.exit(ExitCode.NOK);
     }
 
-    console.info(`Файл ${FILE_NAME} успешно создан`);
+    console.info(chalk.green(`Файл ${FILE_NAME} успешно создан`));
   }
 };
