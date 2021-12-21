@@ -2,10 +2,9 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const {ExitCode} = require(`../constants`);
+const {FILE_NAME, ExitCode} = require(`../constants`);
 const {getRandomElement, getRandomElements, getRandomPastDate, getUniqueArray, getRecordsFromTxtFile} = require(`../../utils`);
 
-const FILE_NAME = `mocks.json`;
 const MIN_RECORDS = 1;
 const MAX_RECORDS = 1000;
 const MAX_MONTHS_CREATED_AGO = 3;
