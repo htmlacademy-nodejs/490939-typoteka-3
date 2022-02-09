@@ -6,8 +6,9 @@
   "scripts": {
     "eslint": "eslint --ext .js src/",
     "test": "npm run eslint",
-    "start": "nodemon ./src/service/service.js",
-    "debug:generate": "node --inspect ./src/service/service.js --generate 3",
+    "start-cli": "node ./src/service/service.js",
+    "debug:cli-generate": "node --inspect ./src/service/service.js --generate 3",
+    "debug:cli-server": "node --inspect ./src/service/service.js --server",
     "start-front-server": "nodemon ./src/express/express.js"
   },
   "repository": {
