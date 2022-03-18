@@ -7,6 +7,7 @@ const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
+const apiRoutes = require(`./routes/api/index.js`);
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.set(`view engine`, `pug`);
 app.use(`/`, mainRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/articles`, articlesRoutes);
+app.use(`/api`, apiRoutes);
 
 app.on(`error`, (err) => console.error(err));
 

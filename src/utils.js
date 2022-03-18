@@ -46,15 +46,47 @@ const getUniqueArray = (someArray) => {
 
 // возвращает массив строк из текстового файла
 const getRecordsFromTxtFile = async (filePath) => {
-  const rows = await fs.readFile(filePath);
-  return String(rows).trim().split(`\n`);
+  try {
+    const rows = await fs.readFile(filePath);
+    return String(rows).trim().split(`\n`);
+  } catch (err) {
+    return ``;
+  }
 };
 
 // возвращает js object из json файла
 const getRecordsFromJsonFile = async (filePath) => {
-  const data = await fs.readFile(filePath);
-  return JSON.parse(data);
+  try {
+    const data = await fs.readFile(filePath);
+    return JSON.parse(data);
+  } catch (err) {
+    return [];
+  }
 };
+
+// возвращает из массива эл-т с указанным id
+function getItem(items, itemId) {
+  return items.find((el) => el.id === itemId);
+}
+
+// возвращает из массива индекс эл-та с указанным id
+function getItemIndex(items, itemId) {
+  return items.findIndex((el) => el.id === itemId);
+}
+
+// проверяет наличие в массиве эл-та с указанным id
+function hasItem(items, itemId) {
+  return Boolean(getItemIndex(items, itemId) !== -1);
+}
+
+// удаляет из массива эл-т с указанным id
+function removeItem(items, itemId) {
+  const index = getItemIndex(items, itemId);
+  if (index !== -1) {
+    items.splice(index, 1);
+  }
+  return items;
+}
 
 module.exports = {
   getRandomInt,
@@ -64,6 +96,9 @@ module.exports = {
   getRandomPastDate,
   getUniqueArray,
   getRecordsFromTxtFile,
-  getRecordsFromJsonFile
+  getRecordsFromJsonFile,
+  getItem,
+  hasItem,
+  removeItem
 };
 
