@@ -2,7 +2,7 @@
 
 const {Router} = require(`express`);
 const searchRouter = new Router();
-const {sendNotFound, sendBadRequest, sendJson} = require(`../services/api-responses.js`);
+const {sendNotFound, sendBadRequest, sendJson} = require(`./api-responses.js`);
 const storage = require(`../storage/storage.js`).articles;
 
 searchRouter.get(`/`, (req, res) => {

@@ -4,9 +4,9 @@ const {Router} = require(`express`);
 const apiRouter = new Router();
 const bodyParser = require(`body-parser`);
 const jsonParser = bodyParser.json();
-const articlesRoutes = require(`./routes/articles.js`);
-const categoriesRoutes = require(`./routes/categories.js`);
-const searchRoutes = require(`./routes/search.js`);
+const articlesRoutes = require(`./routes/articles.routes.js`);
+const categoriesRoutes = require(`./routes/categories.routes.js`);
+const searchRoutes = require(`./routes/search.routes.js`);
 const {sendGreeting, sendWrongPath} = require(`./services/api-responses.js`);
 
 apiRouter.use(jsonParser);

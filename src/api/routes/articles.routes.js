@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 const articlesRouter = new Router();
 const isValidArticleBody = require(`../validators/article.validator.js`);
 const isValidCommentBody = require(`../validators/comment.valiator.js`);
-const {sendNotFound, sendBadRequest, sendJson, sendId, sendNothing} = require(`../services/api-responses.js`);
+const {sendNotFound, sendBadRequest, sendJson, sendId, sendNothing} = require(`./api-responses.js`);
 const storage = require(`../storage/storage.js`).articles;
 
 articlesRouter.get(`/`, (_req, res) => {
