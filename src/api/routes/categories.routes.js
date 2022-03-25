@@ -1,13 +1,11 @@
 'use strict';
 
 const {Router} = require(`express`);
-const categoriesRouter = new Router();
-const {sendJson} = require(`./api-responses.js`);
-const storage = require(`../storage/storage.js`).categories;
+const CategoriesService = require(`../services/categories.service.js`);
 
-categoriesRouter.get(`/`, (_req, res) => {
-  const categories = storage.getCategories();
-  sendJson(res, categories);
-});
+const router = new Router();
+const service = new CategoriesService();
 
-module.exports = categoriesRouter;
+router.get(`/`, (_req, res) => service.getCategoriesHandler(res));
+
+module.exports = router;

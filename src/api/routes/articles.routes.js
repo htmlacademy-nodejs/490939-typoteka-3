@@ -1,76 +1,18 @@
 'use strict';
 
 const {Router} = require(`express`);
-const articlesRouter = new Router();
-const isValidArticleBody = require(`../validators/article.validator.js`);
-const isValidCommentBody = require(`../validators/comment.valiator.js`);
-const {sendNotFound, sendBadRequest, sendJson, sendId, sendNothing} = require(`./api-responses.js`);
-const storage = require(`../storage/storage.js`).articles;
+const ArticleService = require(`../services/articles.service.js`);
 
-articlesRouter.get(`/`, (_req, res) => {
-  const articles = storage.getArticles();
-  sendJson(res, articles);
-});
-articlesRouter.get(`/:articleId`, (req, res) => {
-  const {articleId} = req.params;
-  const article = storage.getArticleById(articleId);
-  if (!article) {
-    return sendNotFound(res);
-  }
-  return sendJson(res, article);
-});
-articlesRouter.get(`/:articleId/comments`, (req, res) => {
-  const {articleId} = req.params;
-  const article = storage.getArticleById(articleId);
-  if (!article) {
-    return sendNotFound(res);
-  }
-  return sendJson(res, article.comments);
-});
-articlesRouter.post(`/`, (req, res) => {
-  if (!isValidArticleBody(req.body)) {
-    return sendBadRequest(res);
-  }
-  const newArticleId = storage.addNewArticle(req.body);
-  return sendId(res, newArticleId);
-});
-articlesRouter.post(`/:articleId/comments`, (req, res) => {
-  if (!isValidCommentBody(req.body)) {
-    return sendBadRequest(res);
-  }
-  const {articleId} = req.params;
-  const newCommentId = storage.addNewCommentByArticleId(articleId, req.body);
-  if (!newCommentId) {
-    return sendNotFound(res);
-  }
-  return sendId(res, newCommentId);
-});
-articlesRouter.put(`/:articleId`, (req, res) => {
-  if (!isValidArticleBody(req.body)) {
-    return sendBadRequest(res);
-  }
-  const {articleId} = req.params;
-  const newArticleId = storage.updateArticleById(articleId, req.body);
-  if (!newArticleId) {
-    return sendNotFound(res);
-  }
-  return sendId(res, newArticleId);
-});
-articlesRouter.delete(`/:articleId`, (req, res) => {
-  const {articleId} = req.params;
-  const removedArticleId = storage.removeArticleById(articleId);
-  if (!removedArticleId) {
-    return sendNotFound(res);
-  }
-  return sendNothing(res);
-});
-articlesRouter.delete(`/:articleId/comments/:commentId`, (req, res) => {
-  const {articleId, commentId} = req.params;
-  const removedCommentId = storage.removeCommentByArticleId(articleId, commentId);
-  if (!removedCommentId) {
-    return sendNotFound(res);
-  }
-  return sendNothing(res);
-});
+const router = new Router();
+const service = new ArticleService();
 
-module.exports = articlesRouter;
+router.get(`/`, (_req, res) => service.getArticlesHandler(res));
+router.get(`/:articleId`, (req, res) => service.getArticleHandler(req.params, res));
+router.get(`/:articleId/comments`, (req, res) => service.getCommentsHandler(req.params, res));
+router.post(`/`, (req, res) => service.postArticleHandler(req.body, res));
+router.post(`/:articleId/comments`, (req, res) => service.postCommentHandler(req.params, req.body, res));
+router.put(`/:articleId`, (req, res) => service.putArticleHandler(req.params, req.body, res));
+router.delete(`/:articleId`, (req, res) => service.deleteArticleHandler(req.params, res));
+router.delete(`/:articleId/comments/:commentId`, (req, res) => service.deleteCommentHandler(req.params, res));
+
+module.exports = router;
