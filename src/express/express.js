@@ -7,7 +7,7 @@ const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
-const apiRoutes = require(`./routes/api/index.js`);
+const apiRoutes = require(`../api/index.js`);
 
 const app = express();
 

@@ -2,7 +2,7 @@
 
 const {Router} = require(`express`);
 const categoriesRouter = new Router();
-const {sendJson} = require(`./services/api-responses.js`);
+const {sendJson} = require(`../services/api-responses.js`);
 
 categoriesRouter.get(`/`, (req, res) => sendJson(res, req.data.categories));
 

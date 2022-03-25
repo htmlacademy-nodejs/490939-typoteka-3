@@ -1,6 +1,6 @@
 'use strict';
 
-const {getRecordsFromJsonFile, getRecordsFromTxtFile} = require(`../../../../utils.js`);
+const {getRecordsFromJsonFile, getRecordsFromTxtFile} = require(`../../utils.js`);
 
 const loadArticles = async () => await getRecordsFromJsonFile(`./mocks.json`);
 const loadCategories = async () => await getRecordsFromTxtFile(`./data/categories.txt`);

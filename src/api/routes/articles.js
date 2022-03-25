@@ -2,10 +2,10 @@
 
 const {Router} = require(`express`);
 const articlesRouter = new Router();
-const {getNewArticle, getNewComment} = require(`./services/items-creation.js`);
-const {isValidArticleBody, isValidCommentBody} = require(`./services/body-validation.js`);
-const {sendNotFound, sendBadRequest, sendJson, sendCreatedId, sendNothing} = require(`./services/api-responses.js`);
-const {getItem, hasItem, removeItem} = require(`../../../utils.js`);
+const {getNewArticle, getNewComment} = require(`../services/items-creation.js`);
+const {isValidArticleBody, isValidCommentBody} = require(`../services/body-validation.js`);
+const {sendNotFound, sendBadRequest, sendJson, sendCreatedId, sendNothing} = require(`../services/api-responses.js`);
+const {getItem, hasItem, removeItem} = require(`../../utils.js`);
 
 articlesRouter.get(`/`, (req, res) => sendJson(res, req.data.articles));
 articlesRouter.get(`/:articleId`, (req, res) => {
