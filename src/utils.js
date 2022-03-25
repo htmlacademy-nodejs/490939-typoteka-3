@@ -64,30 +64,6 @@ const getRecordsFromJsonFile = async (filePath) => {
   }
 };
 
-// возвращает из массива эл-т с указанным id
-function getItem(items, itemId) {
-  return items.find((el) => el.id === itemId);
-}
-
-// возвращает из массива индекс эл-та с указанным id
-function getItemIndex(items, itemId) {
-  return items.findIndex((el) => el.id === itemId);
-}
-
-// проверяет наличие в массиве эл-та с указанным id
-function hasItem(items, itemId) {
-  return Boolean(getItemIndex(items, itemId) !== -1);
-}
-
-// удаляет из массива эл-т с указанным id
-function removeItem(items, itemId) {
-  const index = getItemIndex(items, itemId);
-  if (index !== -1) {
-    items.splice(index, 1);
-  }
-  return items;
-}
-
 module.exports = {
   getRandomInt,
   shuffleArray,
@@ -96,9 +72,6 @@ module.exports = {
   getRandomPastDate,
   getUniqueArray,
   getRecordsFromTxtFile,
-  getRecordsFromJsonFile,
-  getItem,
-  hasItem,
-  removeItem
+  getRecordsFromJsonFile
 };
 
