@@ -14,14 +14,6 @@ class ArticlesStorage {
     this._items = await getRecordsFromJsonFile(`./mocks.json`);
   }
 
-  getArticles() {
-    return this._items;
-  }
-
-  getArticleById(articleId) {
-    return this._items.find((article) => article.id === articleId);
-  }
-
   _getArticle(body, articleId) {
     return {
       id: articleId ? articleId : nanoid(ID_LENGTH),
@@ -46,6 +38,14 @@ class ArticlesStorage {
     };
   }
 
+  getArticles() {
+    return this._items;
+  }
+
+  getArticleById(articleId) {
+    return this._items.find((article) => article.id === articleId);
+  }
+
   addNewArticle(body) {
     const article = this._getArticle(body);
     this._items.push(article);
@@ -62,15 +62,6 @@ class ArticlesStorage {
     return comment.id;
   }
 
-  removeArticleById(articleId) {
-    const articleIndex = this._items.findIndex((item) => item.id === articleId);
-    if (articleIndex === -1) {
-      return undefined;
-    }
-    this._items.splice(articleIndex, 1);
-    return articleId;
-  }
-
   updateArticleById(articleId, body) {
     const article = this.getArticleById(articleId);
     if (!article) {
@@ -79,6 +70,15 @@ class ArticlesStorage {
     this.removeArticleById(articleId);
     const newArticle = this._getArticle(body, articleId);
     this._items = [...this._items, newArticle];
+    return articleId;
+  }
+
+  removeArticleById(articleId) {
+    const articleIndex = this._items.findIndex((item) => item.id === articleId);
+    if (articleIndex === -1) {
+      return undefined;
+    }
+    this._items.splice(articleIndex, 1);
     return articleId;
   }
 
