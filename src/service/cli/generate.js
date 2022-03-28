@@ -2,27 +2,43 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
+const {nanoid} = require(`nanoid`);
 const {FILE_NAME, ExitCode} = require(`../constants`);
-const {getRandomElement, getRandomElements, getRandomPastDate, getUniqueArray, getRecordsFromTxtFile} = require(`../../utils`);
+const {getRandomInt, getRandomElement, getRandomElements, getRandomPastDate, getUniqueArray, getRecordsFromTxtFile} = require(`../../utils`);
 
+const ID_LENGTH = 6;
 const MIN_RECORDS = 1;
 const MAX_RECORDS = 1000;
+const MAX_COMMENTS = 10;
 const MAX_MONTHS_CREATED_AGO = 3;
 const MAX_ANNOUNCE_SENTENCES = 5;
 const DATE_LOCALE = `ru`;
 const DataFilePath = {
   TITLES: `./data/titles.txt`,
   SENTENCES: `./data/sentences.txt`,
-  CATEGORIES: `./data/categories.txt`
+  CATEGORIES: `./data/categories.txt`,
+  COMMENTS: `./data/comments.txt`
 };
 
-function getNewRecord(titles, sentences, categories) {
+function getComments(comments) {
+  return Array.from({length: getRandomInt(0, MAX_COMMENTS)})
+    .map(() => {
+      return {
+        id: nanoid(ID_LENGTH),
+        text: getUniqueArray(getRandomElements(comments)).join(` `)
+      };
+    });
+}
+
+function getNewRecord(titles, sentences, categories, comments) {
   return {
+    id: nanoid(ID_LENGTH),
     title: getRandomElement(titles),
     createdDate: getRandomPastDate({maxMonthsAgo: MAX_MONTHS_CREATED_AGO}).toLocaleString(DATE_LOCALE),
     announce: getRandomElements(sentences, {maxElements: MAX_ANNOUNCE_SENTENCES}).join(` `),
     fullText: getRandomElements(sentences).join(` `),
-    сategory: getUniqueArray(getRandomElements(categories))
+    сategory: getUniqueArray(getRandomElements(categories)),
+    comments: getComments(comments)
   };
 }
 
@@ -41,8 +57,9 @@ module.exports = {
     const titles = await getRecordsFromTxtFile(DataFilePath.TITLES);
     const sentences = await getRecordsFromTxtFile(DataFilePath.SENTENCES);
     const categories = await getRecordsFromTxtFile(DataFilePath.CATEGORIES);
+    const comments = await getRecordsFromTxtFile(DataFilePath.COMMENTS);
 
-    const records = Array.from({length: count}).map(() => getNewRecord(titles, sentences, categories));
+    const records = Array.from({length: count}).map(() => getNewRecord(titles, sentences, categories, comments));
     const data = JSON.stringify(records);
 
     try {

@@ -46,14 +46,22 @@ const getUniqueArray = (someArray) => {
 
 // возвращает массив строк из текстового файла
 const getRecordsFromTxtFile = async (filePath) => {
-  const rows = await fs.readFile(filePath);
-  return String(rows).trim().split(`\n`);
+  try {
+    const rows = await fs.readFile(filePath);
+    return String(rows).trim().split(`\n`);
+  } catch (err) {
+    return ``;
+  }
 };
 
 // возвращает js object из json файла
 const getRecordsFromJsonFile = async (filePath) => {
-  const data = await fs.readFile(filePath);
-  return JSON.parse(data);
+  try {
+    const data = await fs.readFile(filePath);
+    return JSON.parse(data);
+  } catch (err) {
+    return [];
+  }
 };
 
 module.exports = {
