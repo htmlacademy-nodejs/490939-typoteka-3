@@ -37,7 +37,7 @@ function getNewRecord(titles, sentences, categories, comments) {
     createdDate: getRandomPastDate({maxMonthsAgo: MAX_MONTHS_CREATED_AGO}).toLocaleString(DATE_LOCALE),
     announce: getRandomElements(sentences, {maxElements: MAX_ANNOUNCE_SENTENCES}).join(` `),
     fullText: getRandomElements(sentences).join(` `),
-    сategory: getUniqueArray(getRandomElements(categories)),
+    category: getUniqueArray(getRandomElements(categories)),
     comments: getComments(comments)
   };
 }

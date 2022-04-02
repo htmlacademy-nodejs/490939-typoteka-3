@@ -1,16 +1,15 @@
 'use strict';
 
 const {sendJson} = require(`./api-responses.js`);
-const storage = require(`../storage/storage.js`);
 
 class CategoriesService {
 
-  constructor() {
-    this.storage = storage.categories;
+  constructor(categoriesStorage) {
+    this.categoriesStorage = categoriesStorage;
   }
 
   getCategoriesHandler(res) {
-    const categories = this.storage.getCategories();
+    const categories = this.categoriesStorage.getCategories();
     sendJson(res, categories);
   }
 

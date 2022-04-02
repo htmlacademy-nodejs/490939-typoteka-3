@@ -1,11 +1,12 @@
 'use strict';
 
-const {getRecordsFromTxtFile} = require(`../../utils.js`);
+const root = process.cwd();
+const {getRecordsFromTxtFile} = require(`${root}/src/utils.js`);
 
 class CategoriesStorage {
 
-  constructor() {
-    this._items = [];
+  constructor(items) {
+    this._items = items || [];
   }
 
   async _load() {

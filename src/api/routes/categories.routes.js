@@ -1,11 +1,19 @@
 'use strict';
 
 const {Router} = require(`express`);
-const CategoriesService = require(`../services/categories.service.js`);
 
-const router = new Router();
-const service = new CategoriesService();
+class CategoriesRouter {
 
-router.get(`/`, (_req, res) => service.getCategoriesHandler(res));
+  constructor(service) {
+    this.instance = new Router();
+    this.service = service;
+    this.init();
+  }
 
-module.exports = router;
+  init() {
+    const {instance: router, service} = this;
+    router.get(`/`, (_req, res) => service.getCategoriesHandler(res));
+  }
+}
+
+module.exports = CategoriesRouter;

@@ -1,13 +1,14 @@
 'use strict';
 
+const root = process.cwd();
 const {nanoid} = require(`nanoid`);
-const {getRecordsFromJsonFile} = require(`../../utils.js`);
-const ID_LENGTH = 6;
+const {getRecordsFromJsonFile} = require(`${root}/src/utils.js`);
+const {ID_LENGTH} = require(`../constants.js`);
 
 class ArticlesStorage {
 
-  constructor() {
-    this._items = [];
+  constructor(items) {
+    this._items = items || [];
   }
 
   async _load() {
@@ -23,7 +24,7 @@ class ArticlesStorage {
       category: body.category,
       fullText: body.fullText ? `${body.announce} ${body.fullText}` : body.announce,
       photo: body.photo ? body.photo : ``,
-      comments: []
+      comments: body.comments ? body.comments : []
     };
   }
 

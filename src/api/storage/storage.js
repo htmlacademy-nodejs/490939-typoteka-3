@@ -1,17 +1,24 @@
 'use strict';
 
+const root = process.cwd();
+const {NODE_ENV} = require(`${root}/config.js`);
 const ArticlesStorage = require(`./articles.storage.js`);
 const CategoriesStorage = require(`./categories.storage.js`);
 
 class Storage {
 
-  constructor() {
-    this.articles = new ArticlesStorage();
-    this.categories = new CategoriesStorage();
-    this.articles._load();
-    this.categories._load();
+  constructor(articles, categories) {
+    this.articles = new ArticlesStorage(articles);
+    this.categories = new CategoriesStorage(categories);
+  }
+
+  async load() {
+    if (NODE_ENV === `production`) {
+      await this.articles._load();
+      await this.categories._load();
+    }
   }
 
 }
 
-module.exports = new Storage();
+module.exports = Storage;

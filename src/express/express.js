@@ -1,26 +1,39 @@
 'use strict';
 
-const DEFAULT_PORT = 8080;
-
+const root = process.cwd();
 const path = require(`path`);
 const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
-const apiRoutes = require(`../api/index.js`);
+const Api = require(`${root}/src/api/api.js`);
 
-const app = express();
+class App {
 
-app.use(express.static(path.resolve(__dirname, `./public`)));
+  constructor(storage) {
+    this.instance = express();
+    this.storage = storage;
+    this.init();
+  }
 
-app.set(`views`, path.resolve(__dirname, `./templates/pages`));
-app.set(`view engine`, `pug`);
+  init() {
+    const {instance: app, storage} = this;
 
-app.use(`/`, mainRoutes);
-app.use(`/my`, myRoutes);
-app.use(`/articles`, articlesRoutes);
-app.use(`/api`, apiRoutes);
+    const apiRouter = new Api(storage);
 
-app.on(`error`, (err) => console.error(err));
+    app.use(express.static(path.resolve(__dirname, `./public`)));
 
-app.listen(DEFAULT_PORT, () => console.info(`Server listen ${DEFAULT_PORT} port...`));
+    app.set(`views`, path.resolve(__dirname, `./templates/pages`));
+    app.set(`view engine`, `pug`);
+
+    app.use(`/`, mainRoutes);
+    app.use(`/my`, myRoutes);
+    app.use(`/articles`, articlesRoutes);
+    app.use(`/api`, apiRouter.instance);
+
+    app.on(`error`, (err) => console.error(err));
+  }
+}
+
+
+module.exports = App;
