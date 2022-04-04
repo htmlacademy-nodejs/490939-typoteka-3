@@ -4,8 +4,8 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "scripts": {
-    "eslint": "eslint --ext .js src/",
-    "test": "npm run eslint",
+    "test:lint": "eslint --ext .js src/",
+    "test": "cross-env jest",
     "debug:cli-generate": "node --inspect ./src/service/service.js --generate 3",
     "debug:cli-server": "node --inspect ./src/service/service.js --server",
     "start:cli": "node ./src/service/service.js",
@@ -28,6 +28,9 @@
   },
   "dependencies": {
     "chalk": "4.1.2",
+    "jest": "27.5.1",
+    "supertest": "6.2.2",
+    "cross-env": "7.0.3",
     "dotenv": "16.0.0",
     "express": "4.17.2",
     "nanoid": "3.3.1",
