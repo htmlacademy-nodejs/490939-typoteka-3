@@ -9,6 +9,7 @@ const sendWrongPath = (res) => res.status(HttpCode.BAD_REQUEST).json({error: `Wr
 const sendJson = (res, body) => res.status(HttpCode.OK).json(body);
 const sendId = (res, id) => res.status(HttpCode.CREATED).json({id});
 const sendNothing = (res) => res.status(HttpCode.NO_CONTENT).end();
+const sendError = (res) => res.status(HttpCode.ERROR).json({error: `Something went wrong`});
 
 module.exports = {
   sendGreeting,
@@ -17,5 +18,6 @@ module.exports = {
   sendWrongPath,
   sendJson,
   sendId,
-  sendNothing
+  sendNothing,
+  sendError
 };

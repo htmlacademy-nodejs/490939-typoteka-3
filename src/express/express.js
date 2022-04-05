@@ -30,8 +30,7 @@ class App {
     app.use(`/my`, myRoutes);
     app.use(`/articles`, articlesRoutes);
     app.use(`/api`, apiRouter.instance);
-
-    app.on(`error`, (err) => console.error(err));
+    app.use((_req, res) => res.status(404).send(`Wrong path...`));
   }
 }
 
