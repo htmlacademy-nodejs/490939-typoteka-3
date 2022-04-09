@@ -1,0 +1,24 @@
+-
+  const routes = [
+    {method: 'GET', path: '/api/articles'},
+    {method: 'GET', path: '/api/articles/:articleId'},
+    {method: 'GET', path: '/api/articles/:articleId/comments'},
+    {method: 'POST', path: '/api/articles'},
+    {method: 'PUT', path: '/api/articles/:articleId'},
+    {method: 'DELETE', path: '/api/articles/:articleId'},
+    {method: 'DELETE', path: '/api/articles/:articleId/comments/:commentId'},
+    {method: 'GET', path: '/api/categories'},
+    {method: 'GET', path: '/api/search?query=search query string'}
+  ];
+
+main
+  h1 API documentation
+  h2 Available methods
+  ul
+    each route in routes
+      li
+        b=route.method + ' '
+        if (route.method === 'GET' && route.path.indexOf(':') === -1)
+          a(href=`${route.path}`)=route.path
+        else
+          span=route.path

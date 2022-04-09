@@ -9,7 +9,7 @@ const CategoriesService = require(`./categories/categories.service.js`);
 const CategoriesRouter = require(`./categories/categories.routes.js`);
 const SearchService = require(`./articles/search.service.js`);
 const SearchRouter = require(`./articles/search.routes.js`);
-const {sendGreeting, sendWrongPath, sendError} = require(`./api.responses.js`);
+const {sendDocsPage, sendWrongPath, sendError} = require(`./api.responses.js`);
 const {getApiLogger} = require(`${root}/src/logger.js`);
 
 const apiLogger = getApiLogger();
@@ -38,7 +38,7 @@ class ApiRouter {
       res.on(`finish`, () => apiLogger.info(`Response status code: ${res.statusCode}`));
       next();
     });
-    router.get(`/`, (_req, res) => sendGreeting(res));
+    router.get(`/`, (_req, res) => sendDocsPage(res));
     router.use(`/articles`, articlesRouter.instance);
     router.use(`/categories`, categoriesRouter.instance);
     router.use(`/search`, searchRouter.instance);
@@ -46,9 +46,9 @@ class ApiRouter {
       apiLogger.error(`Request to wrong url ${req.url}`);
       sendWrongPath(res);
     });
-    router.use((err, _req, _res, _next) => {
+    router.use((err, _req, res, _next) => {
       apiLogger.error(`Caught error: ${err.stack}`);
-      sendError();
+      sendError(res);
     });
   }
 }

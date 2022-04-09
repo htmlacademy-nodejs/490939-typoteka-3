@@ -1,25 +1,20 @@
 'use strict';
 
-const root = process.cwd();
 const path = require(`path`);
 const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
-const ApiRouter = require(`${root}/src/api/api.router.js`);
 
 class App {
 
-  constructor(storage) {
+  constructor() {
     this.instance = express();
-    this.storage = storage;
     this.init();
   }
 
   init() {
-    const {instance: app, storage} = this;
-
-    const apiRouter = new ApiRouter(storage);
+    const {instance: app} = this;
 
     app.use(express.static(path.resolve(__dirname, `./public`)));
 
@@ -29,7 +24,6 @@ class App {
     app.use(`/`, mainRoutes);
     app.use(`/my`, myRoutes);
     app.use(`/articles`, articlesRoutes);
-    app.use(`/api`, apiRouter.instance);
     app.use((_req, res) => res.status(404).send(`Wrong path...`));
   }
 }

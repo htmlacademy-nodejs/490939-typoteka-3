@@ -3,8 +3,8 @@
 const root = process.cwd();
 const {test, describe, expect} = require(`@jest/globals`);
 const request = require(`supertest`);
-const Storage = require(`${root}/src/api/api.storage.js`);
-const App = require(`${root}/src/express/express.js`);
+const ApiStorage = require(`${root}/src/api/api.storage.js`);
+const Api = require(`${root}/src/api/api.js`);
 const {HttpCode} = require(`${root}/src/api/constants.js`);
 
 const articles = [
@@ -46,9 +46,8 @@ const articles = [
     ]
   }
 ];
-
-const storage = new Storage(articles, undefined);
-const app = new App(storage);
+const apiStorage = new ApiStorage(articles, undefined);
+const api = new Api(apiStorage);
 
 describe(`Search API end-points`, () => {
 
@@ -57,7 +56,7 @@ describe(`Search API end-points`, () => {
     test(`GET /api/search`, async () => {
       const queryStr = `альбом`;
 
-      const res = await request(app.instance).get(encodeURI(`/api/search?query=${queryStr}`));
+      const res = await request(api.instance).get(encodeURI(`/api/search?query=${queryStr}`));
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
       expect(res.body.length).toBe(1);
@@ -69,14 +68,14 @@ describe(`Search API end-points`, () => {
   describe(`Negative scenarios`, () => {
 
     test(`Query string is missed`, async () => {
-      const res = await request(app.instance).get(encodeURI(`/api/search`));
+      const res = await request(api.instance).get(encodeURI(`/api/search`));
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
     test(`Query string is empty`, async () => {
       const queryStr = ``;
 
-      const res = await request(app.instance).get(encodeURI(`/api/search?query=${queryStr}`));
+      const res = await request(api.instance).get(encodeURI(`/api/search?query=${queryStr}`));
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 

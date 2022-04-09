@@ -2,7 +2,8 @@
 
 const {HttpCode} = require(`./constants.js`);
 
-const sendGreeting = (res) => res.status(HttpCode.OK).send(`Wellcome to my first <b>REST API</b>`);
+const sendHomePage = (res) => res.render(`home`);
+const sendDocsPage = (res) => res.render(`docs`);
 const sendNotFound = (res) => res.status(HttpCode.NOT_FOUND).json({error: `Not found`});
 const sendBadRequest = (res) => res.status(HttpCode.BAD_REQUEST).json({error: `Bad request`});
 const sendWrongPath = (res) => res.status(HttpCode.BAD_REQUEST).json({error: `Wrong path`});
@@ -12,7 +13,8 @@ const sendNothing = (res) => res.status(HttpCode.NO_CONTENT).end();
 const sendError = (res) => res.status(HttpCode.ERROR).json({error: `Something went wrong`});
 
 module.exports = {
-  sendGreeting,
+  sendHomePage,
+  sendDocsPage,
   sendNotFound,
   sendBadRequest,
   sendWrongPath,

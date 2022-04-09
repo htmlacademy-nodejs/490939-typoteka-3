@@ -3,8 +3,8 @@
 const root = process.cwd();
 const {test, describe, expect} = require(`@jest/globals`);
 const request = require(`supertest`);
-const Storage = require(`${root}/src/api/api.storage.js`);
-const App = require(`${root}/src/express/express.js`);
+const ApiStorage = require(`${root}/src/api/api.storage.js`);
+const Api = require(`${root}/src/api/api.js`);
 const {HttpCode, ID_LENGTH} = require(`${root}/src/api/constants.js`);
 
 const articles = [
@@ -47,15 +47,15 @@ const articles = [
   }
 ];
 
-const storage = new Storage(articles, undefined);
-const app = new App(storage);
+const apiStorage = new ApiStorage(articles, undefined);
+const api = new Api(apiStorage);
 
 describe(`Articles API end-points`, () => {
 
   describe(`Positive scenarios`, () => {
 
     test(`GET /api/articles`, async () => {
-      const res = await request(app.instance).get(`/api/articles`);
+      const res = await request(api.instance).get(`/api/articles`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
       expect(res.body.length).toBe(articles.length);
@@ -66,7 +66,7 @@ describe(`Articles API end-points`, () => {
     test(`GET /api/articles/:articleId`, async () => {
       const articleId = `wL1r-A`;
 
-      const res = await request(app.instance).get(`/api/articles/${articleId}`);
+      const res = await request(api.instance).get(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body).toHaveProperty(`id`, articleId);
       expect(res.body).toHaveProperty(`title`, `Самый лучший музыкальный альбом этого года`);
@@ -85,7 +85,7 @@ describe(`Articles API end-points`, () => {
     test(`GET /api/articles/:articleId/comments`, async () => {
       const articleId = `wL1r-A`;
 
-      const res = await request(app.instance).get(`/api/articles/${articleId}/comments`);
+      const res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(1);
       expect(res.body[0]).toHaveProperty(`id`, `7015G9`);
@@ -101,7 +101,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles`)
         .send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
@@ -110,11 +110,11 @@ describe(`Articles API end-points`, () => {
 
       const newArticleId = res.body.id;
 
-      res = await request(app.instance).get(`/api/articles/${newArticleId}`);
+      res = await request(api.instance).get(`/api/articles/${newArticleId}`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body).toHaveProperty(`title`, newArticleBody.title);
 
-      res = await request(app.instance).get(`/api/articles`);
+      res = await request(api.instance).get(`/api/articles`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(articles.length);
     });
@@ -129,7 +129,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles/${articleId}/comments`)
         .send(newCommentBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
@@ -138,7 +138,7 @@ describe(`Articles API end-points`, () => {
 
       const newCommentId = res.body.id;
 
-      res = await request(app.instance).get(`/api/articles/${articleId}/comments`);
+      res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(articles[0].comments.length);
 
@@ -151,19 +151,19 @@ describe(`Articles API end-points`, () => {
       const newArticleTitle = `Самый худший музыкальный альбом этого года`;
       let res;
 
-      res = await request(app.instance).get(`/api/articles/${articleId}`);
+      res = await request(api.instance).get(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body).toHaveProperty(`id`, articleId);
 
       const updatedArticleBody = Object.assign(res.body, {title: newArticleTitle});
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .put(`/api/articles/${articleId}`)
         .send(updatedArticleBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
       expect(res.body).toHaveProperty(`id`, articleId);
 
-      res = await request(app.instance).get(`/api/articles/${articleId}`);
+      res = await request(api.instance).get(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body).toHaveProperty(`title`, newArticleTitle);
     });
@@ -172,13 +172,13 @@ describe(`Articles API end-points`, () => {
       const articleId = `K7eVOM`;
       let res;
 
-      res = await request(app.instance).delete(`/api/articles/${articleId}`);
+      res = await request(api.instance).delete(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.NO_CONTENT);
 
-      res = await request(app.instance).get(`/api/articles/${articleId}`);
+      res = await request(api.instance).get(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
 
-      res = await request(app.instance).get(`/api/articles`);
+      res = await request(api.instance).get(`/api/articles`);
       expect(res.body.length).toBe(2);
     });
 
@@ -187,10 +187,10 @@ describe(`Articles API end-points`, () => {
       const commentId = `7015G9`;
       let res;
 
-      res = await request(app.instance).delete(`/api/articles/${articleId}/comments/${commentId}`);
+      res = await request(api.instance).delete(`/api/articles/${articleId}/comments/${commentId}`);
       expect(res.statusCode).toBe(HttpCode.NO_CONTENT);
 
-      res = await request(app.instance).get(`/api/articles/${articleId}/comments`);
+      res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(0);
     });
@@ -207,7 +207,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles`)
         .send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -222,7 +222,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles`)
         .send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -237,7 +237,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles`)
         .send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -252,7 +252,7 @@ describe(`Articles API end-points`, () => {
       };
       let res;
 
-      res = await request(app.instance)
+      res = await request(api.instance)
         .post(`/api/articles`)
         .send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);

@@ -3,21 +3,21 @@
 const root = process.cwd();
 const {test, describe, expect} = require(`@jest/globals`);
 const request = require(`supertest`);
-const Storage = require(`${root}/src/api/api.storage.js`);
-const App = require(`${root}/src/express/express.js`);
+const ApiStorage = require(`${root}/src/api/api.storage.js`);
+const Api = require(`${root}/src/api/api.js`);
 const {HttpCode} = require(`${root}/src/api/constants.js`);
 
 const categories = [`Деревья`, `За жизнь`, `Без рамки`, `Разное`, `IT решения`, `Музыка`, `Кино`, `Программирование`, `Железо`];
 
-const storage = new Storage(undefined, categories);
-const app = new App(storage);
+const apiStorage = new ApiStorage(undefined, categories);
+const api = new Api(apiStorage);
 
 describe(`Categories API end-points`, () => {
 
   describe(`Positive scenarios`, () => {
 
     test(`GET /api/categories`, async () => {
-      const res = await request(app.instance).get(`/api/categories`);
+      const res = await request(api.instance).get(`/api/categories`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
       expect(res.body.length).toBe(categories.length);
