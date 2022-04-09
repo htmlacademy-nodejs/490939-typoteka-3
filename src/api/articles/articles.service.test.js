@@ -1,15 +1,23 @@
+/* eslint-disable max-nested-callbacks */
 'use strict';
 
 const root = process.cwd();
-const {test, describe, expect} = require(`@jest/globals`);
+const {test, describe, expect, beforeEach} = require(`@jest/globals`);
 const request = require(`supertest`);
 const ApiStorage = require(`${root}/src/api/api.storage.js`);
 const Api = require(`${root}/src/api/api.js`);
 const {HttpCode, ID_LENGTH} = require(`${root}/src/api/constants.js`);
-const articlesMocks = require(`${root}/mocks/articles.json`);
+const testArticle = require(`./test-data/test.article.json`);
 
-const apiStorage = new ApiStorage(articlesMocks, undefined);
+const apiStorage = new ApiStorage();
 const api = new Api(apiStorage);
+let articles;
+
+beforeEach(async () => {
+  await apiStorage.load();
+  articles = apiStorage.articles._items;
+  articles.push(testArticle);
+});
 
 describe(`ArticleService`, () => {
 
@@ -19,38 +27,40 @@ describe(`ArticleService`, () => {
       const res = await request(api.instance).get(`/api/articles`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
-      expect(res.body.length).toBe(articlesMocks.length);
-      expect(res.body[0]).toHaveProperty(`title`, `Что такое золотое сечение. Мнения.`);
-      expect(res.body[1]).toHaveProperty(`id`, `wL1r-A`);
+      expect(res.body.length).toBe(articles.length);
+      expect(res.body[0]).toHaveProperty(`id`);
+      expect(res.body[0]).toHaveProperty(`title`);
     });
 
     test(`Should return single article`, async () => {
-      const articleId = `wL1r-A`;
+      const articleId = testArticle.id;
+      const article = articles.find((item) => item.id === articleId);
 
       const res = await request(api.instance).get(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toHaveProperty(`id`, articleId);
-      expect(res.body).toHaveProperty(`title`, `Самый лучший музыкальный альбом этого года`);
-      expect(res.body).toHaveProperty(`createdDate`, `31.01.2022, 11:17:24`);
-      expect(res.body).toHaveProperty(`announce`);
-      expect(res.body).toHaveProperty(`fullText`);
+      expect(res.body).toHaveProperty(`id`, article.id);
+      expect(res.body).toHaveProperty(`title`, article.title);
+      expect(res.body).toHaveProperty(`createdDate`, article.createdDate);
+      expect(res.body).toHaveProperty(`announce`, article.announce);
+      expect(res.body).toHaveProperty(`fullText`, article.fullText);
       expect(res.body).toHaveProperty(`category`);
-      expect(res.body.category[0]).toBe(`Разное`);
-      expect(res.body.category[1]).toBe(`Без рамки`);
+      expect(res.body.category[0]).toBe(article.category[0]);
+      expect(res.body.category[1]).toBe(article.category[1]);
       expect(res.body).toHaveProperty(`comments`);
       expect(res.body.comments.length).toBe(1);
-      expect(res.body.comments[0]).toHaveProperty(`id`, `7015G9`);
-      expect(res.body.comments[0]).toHaveProperty(`text`);
+      expect(res.body.comments[0]).toHaveProperty(`id`, article.comments[0].id);
+      expect(res.body.comments[0]).toHaveProperty(`text`, article.comments[0].text);
     });
 
     test(`Should return article's comments`, async () => {
-      const articleId = `wL1r-A`;
+      const articleId = testArticle.id;
+      const article = articles.find((item) => item.id === articleId);
 
       const res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(1);
-      expect(res.body[0]).toHaveProperty(`id`, `7015G9`);
-      expect(res.body[0]).toHaveProperty(`text`, `Мне не нравится ваш стиль.`);
+      expect(res.body[0]).toHaveProperty(`id`, article.comments[0].id);
+      expect(res.body[0]).toHaveProperty(`text`, article.comments[0].text);
     });
 
   });
@@ -64,51 +74,39 @@ describe(`ArticleService`, () => {
         category: [`IT решения`],
         announce: `Сравниваем 5 популярных BI решений`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
+      const res = await request(api.instance).post(`/api/articles`).send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
       expect(res.body).toHaveProperty(`id`);
       expect(res.body.id.length).toBe(ID_LENGTH);
 
       const newArticleId = res.body.id;
 
-      res = await request(api.instance).get(`/api/articles/${newArticleId}`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toHaveProperty(`title`, newArticleBody.title);
-
-      res = await request(api.instance).get(`/api/articles`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body.length).toBe(articlesMocks.length);
+      expect(newArticleId).toBe(articles[articles.length - 1].id);
     });
 
     test(`Should create new article's comment`, async () => {
-      const articleId = `K7eVOM`;
+      const articleId = testArticle.id;
+      const article = articles.find((item) => item.id === articleId);
+      const articleCommentsCount = article.comments.length;
       const newCommentBody = {
         createdDate: `21.01.2022, 12:21`,
         name: `Иванов Петр`,
         text: `Тема не раскрыта...`,
         articleTitle: `Что такое золотое сечение. Мнения.`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles/${articleId}/comments`)
-        .send(newCommentBody);
+      const res = await request(api.instance).post(`/api/articles/${articleId}/comments`).send(newCommentBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
       expect(res.body).toHaveProperty(`id`);
       expect(res.body.id.length).toBe(ID_LENGTH);
 
       const newCommentId = res.body.id;
+      const lastComment = article.comments[article.comments.length - 1];
 
-      res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body.length).toBe(articlesMocks[0].comments.length);
-
-      expect(res.body[res.body.length - 1]).toHaveProperty(`id`, newCommentId);
-      expect(res.body[res.body.length - 1]).toHaveProperty(`text`, newCommentBody.text);
+      expect(article.comments.length).toBe(articleCommentsCount + 1);
+      expect(lastComment).toHaveProperty(`id`, newCommentId);
+      expect(lastComment).toHaveProperty(`text`, newCommentBody.text);
     });
 
     test(`Shouldn't create new article if 'title' field doesn't passed`, async () => {
@@ -117,11 +115,8 @@ describe(`ArticleService`, () => {
         category: [`IT решения`],
         announce: `Сравниваем 5 популярных BI решений`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
+      const res = await request(api.instance).post(`/api/articles`).send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
@@ -132,11 +127,8 @@ describe(`ArticleService`, () => {
         category: [`IT решения`],
         announce: `Сравниваем 5 популярных BI решений`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
+      const res = await request(api.instance).post(`/api/articles`).send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
@@ -147,11 +139,8 @@ describe(`ArticleService`, () => {
         category: [`IT решения`],
         announce: `Сравниваем 5 популярных BI решений`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
+      const res = await request(api.instance).post(`/api/articles`).send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
@@ -162,11 +151,8 @@ describe(`ArticleService`, () => {
         category: `IT решения`,
         announce: `Сравниваем 5 популярных BI решений`
       };
-      let res;
 
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
+      const res = await request(api.instance).post(`/api/articles`).send(newArticleBody);
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
@@ -175,25 +161,13 @@ describe(`ArticleService`, () => {
   describe(`When edit articles`, () => {
 
     test(`Should change exist article's title`, async () => {
-      const articleId = `wL1r-A`;
-      const newArticleTitle = `Самый худший музыкальный альбом этого года`;
-      let res;
+      const articleId = testArticle.id;
+      const article = articles.find((item) => item.id === articleId);
+      const updatedBody = Object.assign(article, {title: `Самый худший музыкальный альбом этого года`});
 
-      res = await request(api.instance).get(`/api/articles/${articleId}`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toHaveProperty(`id`, articleId);
-
-      const updatedArticleBody = Object.assign(res.body, {title: newArticleTitle});
-
-      res = await request(api.instance)
-        .put(`/api/articles/${articleId}`)
-        .send(updatedArticleBody);
+      const res = await request(api.instance).put(`/api/articles/${articleId}`).send(updatedBody);
       expect(res.statusCode).toBe(HttpCode.CREATED);
-      expect(res.body).toHaveProperty(`id`, articleId);
-
-      res = await request(api.instance).get(`/api/articles/${articleId}`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body).toHaveProperty(`title`, newArticleTitle);
+      expect(article.title).toBe(updatedBody.title);
     });
 
   });
@@ -201,30 +175,25 @@ describe(`ArticleService`, () => {
   describe(`When delete articles`, () => {
 
     test(`Should delete single article`, async () => {
-      const articleId = `K7eVOM`;
-      let res;
+      const articleId = testArticle.id;
 
-      res = await request(api.instance).delete(`/api/articles/${articleId}`);
+      const res = await request(api.instance).delete(`/api/articles/${articleId}`);
       expect(res.statusCode).toBe(HttpCode.NO_CONTENT);
 
-      res = await request(api.instance).get(`/api/articles/${articleId}`);
-      expect(res.statusCode).toBe(HttpCode.NOT_FOUND);
-
-      res = await request(api.instance).get(`/api/articles`);
-      expect(res.body.length).toBe(2);
+      const article = articles.find((item) => item.id === articleId);
+      expect(article).toBe(undefined);
     });
 
     test(`Should delete single article's comment`, async () => {
-      const articleId = `wL1r-A`;
-      const commentId = `7015G9`;
-      let res;
+      const articleId = testArticle.id;
+      const commentId = testArticle.comments[0].id;
 
-      res = await request(api.instance).delete(`/api/articles/${articleId}/comments/${commentId}`);
+      const res = await request(api.instance).delete(`/api/articles/${articleId}/comments/${commentId}`);
       expect(res.statusCode).toBe(HttpCode.NO_CONTENT);
 
-      res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
-      expect(res.statusCode).toBe(HttpCode.OK);
-      expect(res.body.length).toBe(0);
+      const article = articles.find((item) => item.id === articleId);
+      const comment = article.comments.find((item) => item.id === commentId);
+      expect(comment).toBe(undefined);
     });
 
   });

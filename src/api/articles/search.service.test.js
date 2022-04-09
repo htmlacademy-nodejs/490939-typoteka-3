@@ -1,15 +1,23 @@
+/* eslint-disable max-nested-callbacks */
 'use strict';
 
 const root = process.cwd();
-const {test, describe, expect} = require(`@jest/globals`);
+const {test, describe, expect, beforeEach} = require(`@jest/globals`);
 const request = require(`supertest`);
 const ApiStorage = require(`${root}/src/api/api.storage.js`);
 const Api = require(`${root}/src/api/api.js`);
 const {HttpCode} = require(`${root}/src/api/constants.js`);
-const articlesMocks = require(`${root}/mocks/articles.json`);
+const testArticle = require(`./test-data/test.article.json`);
 
-const apiStorage = new ApiStorage(articlesMocks, undefined);
+const apiStorage = new ApiStorage();
 const api = new Api(apiStorage);
+let articles;
+
+beforeEach(async () => {
+  await apiStorage.load();
+  articles = apiStorage.articles._items;
+  articles.push(testArticle);
+});
 
 describe(`SearchService`, () => {
 
@@ -17,12 +25,13 @@ describe(`SearchService`, () => {
 
     test(`Should return all matched articles`, async () => {
       const queryStr = `альбом`;
+      const matches = articles.filter((item) => item.title.indexOf(queryStr) !== -1);
 
       const res = await request(api.instance).get(encodeURI(`/api/search?query=${queryStr}`));
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
-      expect(res.body.length).toBe(1);
-      expect(res.body[0]).toHaveProperty(`id`, `wL1r-A`);
+      expect(res.body.length).toBe(matches.length);
+      expect(res.body[0]).toHaveProperty(`id`, matches[0].id);
     });
 
     test(`Should return 400 if query string is missed`, async () => {

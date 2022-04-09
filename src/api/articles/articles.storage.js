@@ -7,12 +7,12 @@ const {ID_LENGTH} = require(`${root}/src/api/constants.js`);
 
 class ArticlesStorage {
 
-  constructor(items) {
-    this._items = items || [];
+  constructor() {
+    this._items = [];
   }
 
   async _load() {
-    this._items = await getRecordsFromJsonFile(`./mocks.json`);
+    this._items = await getRecordsFromJsonFile(`./mocks/articles.mocks.json`);
   }
 
   _getArticle(body, articleId) {
@@ -70,7 +70,7 @@ class ArticlesStorage {
     }
     this.removeArticleById(articleId);
     const newArticle = this._getArticle(body, articleId);
-    this._items = [...this._items, newArticle];
+    this._items.push(newArticle);
     return articleId;
   }
 

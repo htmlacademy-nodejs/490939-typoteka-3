@@ -5,20 +5,14 @@ const CategoriesStorage = require(`./categories/categories.storage.js`);
 
 class ApiStorage {
 
-  constructor(articles, categories) {
-    this._receivedArticles = Boolean(articles);
-    this._receivedCategories = Boolean(categories);
-    this.articles = new ArticlesStorage(articles);
-    this.categories = new CategoriesStorage(categories);
+  constructor() {
+    this.articles = new ArticlesStorage();
+    this.categories = new CategoriesStorage();
   }
 
   async load() {
-    if (!this._receivedArticles) {
-      await this.articles._load();
-    }
-    if (!this._receivedCategories) {
-      await this.categories._load();
-    }
+    await this.articles._load();
+    await this.categories._load();
   }
 
 }
