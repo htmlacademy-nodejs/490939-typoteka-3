@@ -11,11 +11,11 @@ const articlesMocks = require(`${root}/mocks/articles.json`);
 const apiStorage = new ApiStorage(articlesMocks, undefined);
 const api = new Api(apiStorage);
 
-describe(`Search API end-points`, () => {
+describe(`SearchService`, () => {
 
-  describe(`Positive scenarios`, () => {
+  describe(`When search articles by title`, () => {
 
-    test(`GET /api/search`, async () => {
+    test(`Should return all matched articles`, async () => {
       const queryStr = `альбом`;
 
       const res = await request(api.instance).get(encodeURI(`/api/search?query=${queryStr}`));
@@ -25,16 +25,12 @@ describe(`Search API end-points`, () => {
       expect(res.body[0]).toHaveProperty(`id`, `wL1r-A`);
     });
 
-  });
-
-  describe(`Negative scenarios`, () => {
-
-    test(`Query string is missed`, async () => {
+    test(`Should return 400 if query string is missed`, async () => {
       const res = await request(api.instance).get(encodeURI(`/api/search`));
       expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
-    test(`Query string is empty`, async () => {
+    test(`Should return 400 if auery string is empty`, async () => {
       const queryStr = ``;
 
       const res = await request(api.instance).get(encodeURI(`/api/search?query=${queryStr}`));

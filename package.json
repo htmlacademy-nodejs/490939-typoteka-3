@@ -5,7 +5,7 @@
   "main": "./src/service/service.js",
   "scripts": {
     "test:lint": "eslint --ext .js src/",
-    "test:js": "jest",
+    "test:js": "jest --verbose",
     "debug:cli-generate": "node --inspect ./src/service/service.js --generate 3",
     "debug:cli-server": "node --inspect ./src/service/service.js --server",
     "start:cli": "node ./src/service/service.js",

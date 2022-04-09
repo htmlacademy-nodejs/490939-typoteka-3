@@ -11,11 +11,11 @@ const categoriesMocks = require(`${root}/mocks/categories.json`);
 const apiStorage = new ApiStorage(undefined, categoriesMocks);
 const api = new Api(apiStorage);
 
-describe(`Categories API end-points`, () => {
+describe(`CategorieshService`, () => {
 
-  describe(`Positive scenarios`, () => {
+  describe(`When get categories`, () => {
 
-    test(`GET /api/categories`, async () => {
+    test(`Should return all categories`, async () => {
       const res = await request(api.instance).get(`/api/categories`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
@@ -24,10 +24,6 @@ describe(`Categories API end-points`, () => {
       expect(res.body[res.body.length - 1]).toBe(`Железо`);
     });
 
-  });
-
-  describe(`Negative scenarios`, () => {
-    // TODO
   });
 
 });

@@ -11,11 +11,11 @@ const articlesMocks = require(`${root}/mocks/articles.json`);
 const apiStorage = new ApiStorage(articlesMocks, undefined);
 const api = new Api(apiStorage);
 
-describe(`Articles API end-points`, () => {
+describe(`ArticleService`, () => {
 
-  describe(`Positive scenarios`, () => {
+  describe(`When get articles`, () => {
 
-    test(`GET /api/articles`, async () => {
+    test(`Should return all articles`, async () => {
       const res = await request(api.instance).get(`/api/articles`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.headers[`content-type`]).toBe(`application/json; charset=utf-8`);
@@ -24,7 +24,7 @@ describe(`Articles API end-points`, () => {
       expect(res.body[1]).toHaveProperty(`id`, `wL1r-A`);
     });
 
-    test(`GET /api/articles/:articleId`, async () => {
+    test(`Should return single article`, async () => {
       const articleId = `wL1r-A`;
 
       const res = await request(api.instance).get(`/api/articles/${articleId}`);
@@ -43,7 +43,7 @@ describe(`Articles API end-points`, () => {
       expect(res.body.comments[0]).toHaveProperty(`text`);
     });
 
-    test(`GET /api/articles/:articleId/comments`, async () => {
+    test(`Should return article's comments`, async () => {
       const articleId = `wL1r-A`;
 
       const res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
@@ -53,7 +53,11 @@ describe(`Articles API end-points`, () => {
       expect(res.body[0]).toHaveProperty(`text`, `Мне не нравится ваш стиль.`);
     });
 
-    test(`POST /api/articles`, async () => {
+  });
+
+  describe(`When post articles`, () => {
+
+    test(`Should create new article`, async () => {
       const newArticleBody = {
         createdDate: `19.12.2021, 11:11`,
         title: `Обзор TOP 5 популярных BI решений`,
@@ -80,7 +84,7 @@ describe(`Articles API end-points`, () => {
       expect(res.body.length).toBe(articlesMocks.length);
     });
 
-    test(`POST /api/articles/:articleId/comments`, async () => {
+    test(`Should create new article's comment`, async () => {
       const articleId = `K7eVOM`;
       const newCommentBody = {
         createdDate: `21.01.2022, 12:21`,
@@ -107,7 +111,70 @@ describe(`Articles API end-points`, () => {
       expect(res.body[res.body.length - 1]).toHaveProperty(`text`, newCommentBody.text);
     });
 
-    test(`PUT /api/articles/:articleId`, async () => {
+    test(`Shouldn't create new article if 'title' field doesn't passed`, async () => {
+      const newArticleBody = {
+        createdDate: `19.12.2021, 11:11`,
+        category: [`IT решения`],
+        announce: `Сравниваем 5 популярных BI решений`
+      };
+      let res;
+
+      res = await request(api.instance)
+        .post(`/api/articles`)
+        .send(newArticleBody);
+      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`Shouldn't create new article if 'title' field is too short`, async () => {
+      const newArticleBody = {
+        createdDate: `19.12.2021, 11:11`,
+        title: `Обзор`,
+        category: [`IT решения`],
+        announce: `Сравниваем 5 популярных BI решений`
+      };
+      let res;
+
+      res = await request(api.instance)
+        .post(`/api/articles`)
+        .send(newArticleBody);
+      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`Shouldn't create new article if 'createdDate' field has wrong format`, async () => {
+      const newArticleBody = {
+        createdDate: `19-12-2021, 11:11`,
+        title: `Обзор TOP 5 популярных BI решений`,
+        category: [`IT решения`],
+        announce: `Сравниваем 5 популярных BI решений`
+      };
+      let res;
+
+      res = await request(api.instance)
+        .post(`/api/articles`)
+        .send(newArticleBody);
+      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    test(`Shouldn't create new article if 'category' field isn't array`, async () => {
+      const newArticleBody = {
+        createdDate: `19.12.2021, 11:11`,
+        title: `Обзор TOP 5 популярных BI решений`,
+        category: `IT решения`,
+        announce: `Сравниваем 5 популярных BI решений`
+      };
+      let res;
+
+      res = await request(api.instance)
+        .post(`/api/articles`)
+        .send(newArticleBody);
+      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+  });
+
+  describe(`When edit articles`, () => {
+
+    test(`Should change exist article's title`, async () => {
       const articleId = `wL1r-A`;
       const newArticleTitle = `Самый худший музыкальный альбом этого года`;
       let res;
@@ -129,7 +196,11 @@ describe(`Articles API end-points`, () => {
       expect(res.body).toHaveProperty(`title`, newArticleTitle);
     });
 
-    test(`DELETE /api/articles/:articleId`, async () => {
+  });
+
+  describe(`When delete articles`, () => {
+
+    test(`Should delete single article`, async () => {
       const articleId = `K7eVOM`;
       let res;
 
@@ -143,7 +214,7 @@ describe(`Articles API end-points`, () => {
       expect(res.body.length).toBe(2);
     });
 
-    test(`DELETE /api/articles/:articleId/comments/:commentId`, async () => {
+    test(`Should delete single article's comment`, async () => {
       const articleId = `wL1r-A`;
       const commentId = `7015G9`;
       let res;
@@ -154,69 +225,6 @@ describe(`Articles API end-points`, () => {
       res = await request(api.instance).get(`/api/articles/${articleId}/comments`);
       expect(res.statusCode).toBe(HttpCode.OK);
       expect(res.body.length).toBe(0);
-    });
-
-  });
-
-  describe(`Negative scenarios`, () => {
-
-    test(`Field title property doesn't exist`, async () => {
-      const newArticleBody = {
-        createdDate: `19.12.2021, 11:11`,
-        category: [`IT решения`],
-        announce: `Сравниваем 5 популярных BI решений`
-      };
-      let res;
-
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
-      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
-    });
-
-    test(`Field createdDate has wrong format`, async () => {
-      const newArticleBody = {
-        createdDate: `19-12-2021, 11:11`,
-        title: `Обзор TOP 5 популярных BI решений`,
-        category: [`IT решения`],
-        announce: `Сравниваем 5 популярных BI решений`
-      };
-      let res;
-
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
-      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
-    });
-
-    test(`Field title too short`, async () => {
-      const newArticleBody = {
-        createdDate: `19.12.2021, 11:11`,
-        title: `Обзор`,
-        category: [`IT решения`],
-        announce: `Сравниваем 5 популярных BI решений`
-      };
-      let res;
-
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
-      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
-    });
-
-    test(`Field category isn't array`, async () => {
-      const newArticleBody = {
-        createdDate: `19.12.2021, 11:11`,
-        title: `Обзор TOP 5 популярных BI решений`,
-        category: `IT решения`,
-        announce: `Сравниваем 5 популярных BI решений`
-      };
-      let res;
-
-      res = await request(api.instance)
-        .post(`/api/articles`)
-        .send(newArticleBody);
-      expect(res.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
   });
