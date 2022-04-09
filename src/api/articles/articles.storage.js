@@ -3,7 +3,7 @@
 const root = process.cwd();
 const {nanoid} = require(`nanoid`);
 const {getRecordsFromJsonFile} = require(`${root}/src/utils.js`);
-const {ID_LENGTH} = require(`../constants.js`);
+const {ID_LENGTH} = require(`${root}/src/api/constants.js`);
 
 class ArticlesStorage {
 

@@ -3,7 +3,7 @@
 const root = process.cwd();
 const {test, describe, expect} = require(`@jest/globals`);
 const request = require(`supertest`);
-const Storage = require(`${root}/src/api/storage/storage.js`);
+const Storage = require(`${root}/src/api/api.storage.js`);
 const App = require(`${root}/src/express/express.js`);
 const {HttpCode} = require(`${root}/src/api/constants.js`);
 

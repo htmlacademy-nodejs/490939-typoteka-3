@@ -1,9 +1,9 @@
 'use strict';
 
-const ArticlesStorage = require(`./articles.storage.js`);
-const CategoriesStorage = require(`./categories.storage.js`);
+const ArticlesStorage = require(`./articles/articles.storage.js`);
+const CategoriesStorage = require(`./categories/categories.storage.js`);
 
-class Storage {
+class ApiStorage {
 
   constructor(articles, categories) {
     this._receivedArticles = Boolean(articles);
@@ -23,4 +23,4 @@ class Storage {
 
 }
 
-module.exports = Storage;
+module.exports = ApiStorage;

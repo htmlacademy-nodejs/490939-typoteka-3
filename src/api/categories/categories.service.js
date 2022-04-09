@@ -1,6 +1,6 @@
 'use strict';
 
-const {sendJson} = require(`./api-responses.js`);
+const {sendJson} = require(`../api.responses.js`);
 
 class CategoriesService {
 

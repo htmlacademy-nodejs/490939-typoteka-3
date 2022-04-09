@@ -6,7 +6,7 @@ const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
-const Api = require(`${root}/src/api/api.js`);
+const ApiRouter = require(`${root}/src/api/api.router.js`);
 
 class App {
 
@@ -19,7 +19,7 @@ class App {
   init() {
     const {instance: app, storage} = this;
 
-    const apiRouter = new Api(storage);
+    const apiRouter = new ApiRouter(storage);
 
     app.use(express.static(path.resolve(__dirname, `./public`)));
 

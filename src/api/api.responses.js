@@ -1,6 +1,6 @@
 'use strict';
 
-const {HttpCode} = require(`../constants.js`);
+const {HttpCode} = require(`./constants.js`);
 
 const sendGreeting = (res) => res.status(HttpCode.OK).send(`Wellcome to my first <b>REST API</b>`);
 const sendNotFound = (res) => res.status(HttpCode.NOT_FOUND).json({error: `Not found`});

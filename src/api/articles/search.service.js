@@ -1,6 +1,6 @@
 'use strict';
 
-const {sendNotFound, sendBadRequest, sendJson} = require(`./api-responses.js`);
+const {sendNotFound, sendBadRequest, sendJson} = require(`../api.responses.js`);
 
 class SearchService {
 
