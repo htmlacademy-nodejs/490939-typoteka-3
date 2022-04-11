@@ -3,7 +3,7 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
-const {FILE_NAME, ExitCode} = require(`../constants`);
+const {ARTICLES_FILE_NAME, CATEGORIES_FILE_NAME, ExitCode} = require(`../constants`);
 const {getRandomInt, getRandomElement, getRandomElements, getRandomPastDate, getUniqueArray, getRecordsFromTxtFile} = require(`../../utils`);
 
 const ID_LENGTH = 6;
@@ -37,7 +37,7 @@ function getNewRecord(titles, sentences, categories, comments) {
     createdDate: getRandomPastDate({maxMonthsAgo: MAX_MONTHS_CREATED_AGO}).toLocaleString(DATE_LOCALE),
     announce: getRandomElements(sentences, {maxElements: MAX_ANNOUNCE_SENTENCES}).join(` `),
     fullText: getRandomElements(sentences).join(` `),
-    сategory: getUniqueArray(getRandomElements(categories)),
+    category: getUniqueArray(getRandomElements(categories)),
     comments: getComments(comments)
   };
 }
@@ -60,15 +60,16 @@ module.exports = {
     const comments = await getRecordsFromTxtFile(DataFilePath.COMMENTS);
 
     const records = Array.from({length: count}).map(() => getNewRecord(titles, sentences, categories, comments));
-    const data = JSON.stringify(records);
+    const articles = JSON.stringify(records);
 
     try {
-      await fs.writeFile(FILE_NAME, data);
+      await fs.writeFile(`./mocks/${ARTICLES_FILE_NAME}`, articles);
+      await fs.writeFile(`./mocks/${CATEGORIES_FILE_NAME}`, categories);
     } catch (error) {
       console.error(chalk.red(`Ошибка записи данных в файл: ${error}`));
       process.exit(ExitCode.NOK);
     }
 
-    console.info(chalk.green(`Файл ${FILE_NAME} успешно создан`));
+    console.info(chalk.green(`Mock файлы успешно созданы`));
   }
 };

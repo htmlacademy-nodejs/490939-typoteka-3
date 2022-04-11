@@ -1,26 +1,32 @@
 'use strict';
 
-const DEFAULT_PORT = 8080;
-
 const path = require(`path`);
 const express = require(`express`);
 const mainRoutes = require(`./routes/main.js`);
 const myRoutes = require(`./routes/my.js`);
 const articlesRoutes = require(`./routes/articles.js`);
-const apiRoutes = require(`../api/index.js`);
 
-const app = express();
+class App {
 
-app.use(express.static(path.resolve(__dirname, `./public`)));
+  constructor() {
+    this.instance = express();
+    this.init();
+  }
 
-app.set(`views`, path.resolve(__dirname, `./templates/pages`));
-app.set(`view engine`, `pug`);
+  init() {
+    const {instance: app} = this;
 
-app.use(`/`, mainRoutes);
-app.use(`/my`, myRoutes);
-app.use(`/articles`, articlesRoutes);
-app.use(`/api`, apiRoutes);
+    app.use(express.static(path.resolve(__dirname, `./public`)));
 
-app.on(`error`, (err) => console.error(err));
+    app.set(`views`, path.resolve(__dirname, `./templates/pages`));
+    app.set(`view engine`, `pug`);
 
-app.listen(DEFAULT_PORT, () => console.info(`Server listen ${DEFAULT_PORT} port...`));
+    app.use(`/`, mainRoutes);
+    app.use(`/my`, myRoutes);
+    app.use(`/articles`, articlesRoutes);
+    app.use((_req, res) => res.status(404).send(`Wrong path...`));
+  }
+}
+
+
+module.exports = App;

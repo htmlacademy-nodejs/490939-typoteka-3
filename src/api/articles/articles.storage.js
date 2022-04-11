@@ -1,8 +1,9 @@
 'use strict';
 
+const root = process.cwd();
 const {nanoid} = require(`nanoid`);
-const {getRecordsFromJsonFile} = require(`../../utils.js`);
-const ID_LENGTH = 6;
+const {getRecordsFromJsonFile} = require(`${root}/src/utils.js`);
+const {ID_LENGTH} = require(`${root}/src/api/constants.js`);
 
 class ArticlesStorage {
 
@@ -11,7 +12,7 @@ class ArticlesStorage {
   }
 
   async _load() {
-    this._items = await getRecordsFromJsonFile(`./mocks.json`);
+    this._items = await getRecordsFromJsonFile(`./mocks/articles.mocks.json`);
   }
 
   _getArticle(body, articleId) {
@@ -23,7 +24,7 @@ class ArticlesStorage {
       category: body.category,
       fullText: body.fullText ? `${body.announce} ${body.fullText}` : body.announce,
       photo: body.photo ? body.photo : ``,
-      comments: []
+      comments: body.comments ? body.comments : []
     };
   }
 
@@ -69,7 +70,7 @@ class ArticlesStorage {
     }
     this.removeArticleById(articleId);
     const newArticle = this._getArticle(body, articleId);
-    this._items = [...this._items, newArticle];
+    this._items.push(newArticle);
     return articleId;
   }
 

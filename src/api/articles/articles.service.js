@@ -1,23 +1,22 @@
 'use strict';
 
-const isValidArticleBody = require(`../validators/article.validator.js`);
-const isValidCommentBody = require(`../validators/comment.valiator.js`);
-const {sendNotFound, sendBadRequest, sendJson, sendId, sendNothing} = require(`./api-responses.js`);
-const storage = require(`../storage/storage.js`);
+const isValidArticleBody = require(`./validators/article.validator.js`);
+const isValidCommentBody = require(`./validators/comment.valiator.js`);
+const {sendNotFound, sendBadRequest, sendJson, sendId, sendNothing} = require(`../api.responses.js`);
 
 class ArticleService {
 
-  constructor() {
-    this.storage = storage.articles;
+  constructor(articlesStorage) {
+    this.articlesStorage = articlesStorage;
   }
 
   getArticlesHandler(res) {
-    const articles = this.storage.getArticles();
+    const articles = this.articlesStorage.getArticles();
     sendJson(res, articles);
   }
 
   getArticleHandler({articleId}, res) {
-    const article = this.storage.getArticleById(articleId);
+    const article = this.articlesStorage.getArticleById(articleId);
     if (!article) {
       return sendNotFound(res);
     }
@@ -25,7 +24,7 @@ class ArticleService {
   }
 
   getCommentsHandler({articleId}, res) {
-    const article = this.storage.getArticleById(articleId);
+    const article = this.articlesStorage.getArticleById(articleId);
     if (!article) {
       return sendNotFound(res);
     }
@@ -36,7 +35,7 @@ class ArticleService {
     if (!isValidArticleBody(body)) {
       return sendBadRequest(res);
     }
-    const newArticleId = this.storage.addNewArticle(body);
+    const newArticleId = this.articlesStorage.addNewArticle(body);
     return sendId(res, newArticleId);
   }
 
@@ -44,7 +43,7 @@ class ArticleService {
     if (!isValidCommentBody(body)) {
       return sendBadRequest(res);
     }
-    const newCommentId = this.storage.addNewCommentByArticleId(articleId, body);
+    const newCommentId = this.articlesStorage.addNewCommentByArticleId(articleId, body);
     if (!newCommentId) {
       return sendNotFound(res);
     }
@@ -55,7 +54,7 @@ class ArticleService {
     if (!isValidArticleBody(body)) {
       return sendBadRequest(res);
     }
-    const newArticleId = this.storage.updateArticleById(articleId, body);
+    const newArticleId = this.articlesStorage.updateArticleById(articleId, body);
     if (!newArticleId) {
       return sendNotFound(res);
     }
@@ -63,7 +62,7 @@ class ArticleService {
   }
 
   deleteArticleHandler({articleId}, res) {
-    const removedArticleId = this.storage.removeArticleById(articleId);
+    const removedArticleId = this.articlesStorage.removeArticleById(articleId);
     if (!removedArticleId) {
       return sendNotFound(res);
     }
@@ -71,7 +70,7 @@ class ArticleService {
   }
 
   deleteCommentHandler({articleId, commentId}, res) {
-    const removedCommentId = this.storage.removeCommentByArticleId(articleId, commentId);
+    const removedCommentId = this.articlesStorage.removeCommentByArticleId(articleId, commentId);
     if (!removedCommentId) {
       return sendNotFound(res);
     }

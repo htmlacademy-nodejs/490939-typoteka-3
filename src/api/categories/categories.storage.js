@@ -1,6 +1,7 @@
 'use strict';
 
-const {getRecordsFromTxtFile} = require(`../../utils.js`);
+const root = process.cwd();
+const {getRecordsFromJsonFile} = require(`${root}/src/utils.js`);
 
 class CategoriesStorage {
 
@@ -9,7 +10,7 @@ class CategoriesStorage {
   }
 
   async _load() {
-    this._items = await getRecordsFromTxtFile(`./data/categories.txt`);
+    this._items = await getRecordsFromJsonFile(`./data/categories.mocks.json`);
   }
 
   getCategories() {

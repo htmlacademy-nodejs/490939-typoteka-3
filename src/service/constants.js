@@ -4,7 +4,9 @@ const DEFAULT_COMMAND = `--help`;
 
 const USER_ARGV_INDEX = 2;
 
-const FILE_NAME = `mocks.json`;
+const ARTICLES_FILE_NAME = `articles.mocks.json`;
+
+const CATEGORIES_FILE_NAME = `categories.mocks.json`;
 
 const ExitCode = {
   OK: 0,
@@ -14,6 +16,7 @@ const ExitCode = {
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
-  FILE_NAME,
+  ARTICLES_FILE_NAME,
+  CATEGORIES_FILE_NAME,
   ExitCode
 };

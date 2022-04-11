@@ -15,4 +15,7 @@ node_modules/
 build/
 
 # Моки
-mocks.json
+*.mocks.json
+
+# Env файлы
+.env
